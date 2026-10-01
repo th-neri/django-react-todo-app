@@ -20,7 +20,7 @@ const Modal = ({ activeItem, toggle, onSave }) => {
     <div className='fixed inset-0 bg-black/50 w-full h-screen bg-opacity-50 flex items-center justify-center'>
       <div className='bg-white w-full max-w-lg rounded-lg p-6 shadow-xl'>
         <div className='flex items-center justify-end'>
-          <IoMdCloseCircleOutline onClick={toggle} className='text-red-500 hover:text-red-600 text-5xl font-bold'/>
+          <IoMdCloseCircleOutline onClick={toggle} className='text-red-500 hover:text-red-600 text-5xl font-bold cursor-pointer'/>
         </div>
         <div className='flex flex-col justify-center items-center mb-4 gap-3'>
           <h1 className='font-bold text-3xl text-gray-600'>
@@ -67,10 +67,10 @@ const Modal = ({ activeItem, toggle, onSave }) => {
 
           {/* modal actions/options */}
           <div className='flex justify-end space-x-3 mt-6'>
-            <button onClick={toggle} className='bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium transition-colors'>
+            <button onClick={toggle} className='bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium transition-colors cursor-pointer'>
               Cancel
             </button>
-            <button onClick={() => onSave(item)} className='bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md font-medium transition-colors'>
+            <button onClick={() => onSave(item)} className='bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md font-medium transition-colors cursor-pointer'>
               Save
             </button>
           </div>

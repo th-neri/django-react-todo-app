@@ -1,40 +1,32 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Modal from './Modal';
 
-const initialTasks = [
-    {
-        id: 1,
-        title: 'make eggs',
-        description: 'eggs',
-        status: 'pending'
-    },
-    {
-        id: 2,
-        title: 'make dinner',
-        description: 'dinner',
-        status: 'pending'
-    },
-    {
-        id: 3,
-        title: 'do bed',
-        description: 'bed',
-        status: 'completed'
-    },
-    {
-        id: 4,
-        title: 'do tasks',
-        description: 'tasks',
-        status: 'incompleted'
-    }
-]
 
 const Home = () => {
     const navigate = useNavigate();
     const [filterStatus, setFilterStatus] = useState('all');
-    const [taskList, setTaskList] = useState(initialTasks);
+    const [taskList, setTaskList] = useState([]);
     const [modal, setModal] = useState(false);
     const [activeItem, setActiveItem] = useState({ 'title': '', 'description': '', 'status': 'pending' });
+
+    useEffect(() => {
+        refreshList();
+    }, [])
+
+    // fetch tasks from the django api endpoint
+    const refreshList = () => {
+        axios
+            .get('http://127.0.0.1:8000/todo/tasks/')
+            .then(response => {
+                const data = Array.isArray(response.data)
+                    ? response.data
+                    : (response.data.results || [])
+                setTaskList(data);
+            })
+            .catch(error => console.log(error)); // to catch errors that might occur
+    };
 
     // filter tasks based on the selected status
     const filteredStatus = filterStatus == 'all' ? taskList : taskList.filter(task => task.status == filterStatus)
@@ -46,16 +38,29 @@ const Home = () => {
 
     // handle submit/save action
     const handleSubmit = (item) => {
+        // to close the modal the moment i click save
         toggle();
-        alert('Saved!' + JSON.stringify(item));
-        setTaskList(taskList.map(task => (task.id == item.id ? item : task)));
+        if (item.id) {
+            // to update existing task
+            axios
+                .put(`http://127.0.0.1:8000/todo/tasks/${item.id}/`, item)
+                .then(response => refreshList())
+                .catch(error => console.log(error));
+            return
+        }
+        // to create a new task
+        axios
+            .post('http://127.0.0.1:8000/todo/tasks/', item)
+            .then(response => refreshList())
+            .catch(error => console.log(error));
     };
 
     // handle delete action
     const handleDelete = (item) => {
-        toggle();
-        alert('Deleted!' + JSON.stringify(item));
-        setTaskList(taskList.filter(task => task.id !== item.id));
+        axios
+            .delete(`http://127.0.0.1:8000/todo/tasks/${item.id}/`)
+            .then(response => refreshList())
+            .catch(error => console.log(error));
     };
 
     // open model to create a new item
@@ -77,28 +82,28 @@ const Home = () => {
                 {/* all status */}
                 <span onClick={() => setFilterStatus('all')}
                     className={`px-4 py-2 rounded text-sm font-semibold transition colors cursor-pointer ${filterStatus == 'all'
-                        ? 'bg-gray-400 text-white'
+                        ? 'bg-gray-500 hover:bg-gray-600 text-white'
                         : 'bg-black text-white'}`}>
                     All
                 </span>
                 {/* pending status */}
                 <span onClick={() => setFilterStatus('pending')}
                     className={`px-4 py-2 rounded text-sm font-semibold transition colors cursor-pointer ${filterStatus == 'pending'
-                        ? 'bg-gray-400 text-white'
+                        ? 'bg-gray-500 hover:bg-gray-600 text-white'
                         : 'bg-amber-500 hover:bg-amber-600 text-white'}`}>
                     Pending
                 </span>
                 {/* completed status */}
                 <span onClick={() => setFilterStatus('completed')}
                     className={`px-4 py-2 rounded text-sm font-semibold transition colors cursor-pointer ${filterStatus == 'completed'
-                        ? 'bg-gray-400 text-white'
+                        ? 'bg-gray-500 hover:bg-gray-600 text-white'
                         : 'bg-green-500 hover:bg-green-600 text-white'}`}>
                     Completed
                 </span>
                 {/* incompleted status */}
                 <span onClick={() => setFilterStatus('incompleted')}
                     className={`px-4 py-2 rounded text-sm font-semibold transition colors cursor-pointer ${filterStatus == 'incompleted'
-                        ? 'bg-gray-400 text-white'
+                        ? 'bg-gray-500 hover:bg-gray-600 text-white'
                         : 'bg-red-500 hover:bg-red-600 text-white'}`}>
                     Incompleted
                 </span>
@@ -136,7 +141,7 @@ const Home = () => {
             <div className='w-full max-w-2xl flex justify-center'>
                 <div className='w-full bg-white border border-gray-200 rounded-lg p-4 shadow-sm'>
                     <div className='mb-3'>
-                        <button onClick={createItem} className='bg-amber-500 hover:bg-amber-600 text-white py-3 px-6 rounded-2xl font-medium transition-colors cursor-pointer'>
+                        <button onClick={createItem} className='bg-amber-500 hover:bg-amber-600 text-white py-3 px-6 rounded-full font-medium transition-colors cursor-pointer'>
                             Add task
                         </button>
                         {renderTabList()}
