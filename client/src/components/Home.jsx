@@ -76,6 +76,20 @@ const Home = () => {
         setModal(true);
     };
 
+    const renderStatusBadges = (status) => {
+        const statusBadges = {
+            pending: 'bg-amber-500 text-white',
+            completed: 'bg-green-500 text-white',
+            incompleted: 'bg-red-500 text-white'
+        };
+
+        return (
+            <span className={`px-2.5 py-2 rounded text-xs font-bold uppercase ${statusBadges[status]}`}>
+                {status}
+            </span>
+        )
+    }
+
     const renderTabList = () => {
         return (
             <div className='flex gap-3 mt-6'>
@@ -120,14 +134,22 @@ const Home = () => {
 
         return filteredStatus.map(item => (
             <li key={item.id} className='flex items-center justify-between py-4'>
-                <span className={`font-medium text-gray-800 mr-2`} title={item.title}>
-                    {item.title}
-                </span>
+                <div className='flex items-center space-x-4 divide-x divide-gray-300 flex-1'>
+                    <span className='font-semibold text-gray-800 truncate max-w-xs px-7' title={item.title}>
+                        {item.title}
+                    </span>
+                    <span className='font-semibold text-gray-800 truncate max-w-xl px-7' title={item.description}>
+                        {item.description}
+                    </span>
+                    <div className='shrink-0 pl-4'>
+                        {renderStatusBadges(item.status)}
+                    </div>
+                </div>
                 <span className='flex space-x-2'>
-                    <button onClick={() => editItem(item)} className='bg-sky-500 hover:bg-sky-600 text-white px-3 py-1 text-sm rounded transition-colors cursor-pointer'>
+                    <button onClick={() => editItem(item)} className='bg-sky-500 hover:bg-sky-600 text-white text-sm font-bold px-3 py-2 rounded transition-colors cursor-pointer'>
                         Edit
                     </button>
-                    <button onClick={() => handleDelete(item)} className='bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm rounded transition-colors cursor-pointer'>
+                    <button onClick={() => handleDelete(item)} className='bg-red-500 hover:bg-red-600 text-white text-sm font-bold px-3 py-2 rounded transition-colors cursor-pointer'>
                         Delete
                     </button>
                 </span>
@@ -138,7 +160,7 @@ const Home = () => {
     return (
         <div className='w-full min-h-screen bg-sky-600 flex flex-col items-center py-6'>
             <div className='text-white text-center uppercase font-bold text-4xl my-4'>Task Manager</div>
-            <div className='w-full max-w-2xl flex justify-center'>
+            <div className='w-full max-w-7xl flex justify-center'>
                 <div className='w-full bg-white border border-gray-200 rounded-lg p-4 shadow-sm'>
                     <div className='mb-3'>
                         <button onClick={createItem} className='bg-amber-500 hover:bg-amber-600 text-white py-3 px-6 rounded-full font-medium transition-colors cursor-pointer'>
