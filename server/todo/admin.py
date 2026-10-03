@@ -3,5 +3,5 @@ from .models import Todo
 
 @admin.register(Todo)
 class TodoAdmin(admin.ModelAdmin):
-    list_display = ['title', 'description', 'status']
+    list_display = ['title', 'description', 'status', 'due_date']
     ordering = ['title']

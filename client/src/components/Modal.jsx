@@ -50,6 +50,16 @@ const Modal = ({ activeItem, toggle, onSave }) => {
                 className='w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-amber-500' />
             </div>
             <div>
+              <label className='block text-lg font-medium text-gray-700 mb-1'>Due Date</label>
+              <input
+                type='date'
+                name='due_date'
+                value={item.due_date || ''}
+                onChange={handleChange}
+                placeholder='Enter due date'
+                className='w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-amber-500'/>
+            </div>
+            <div>
               <label className='block text-lg font-medium text-gray-700 mb-1'>Status</label>
               <select
                 name='status'
@@ -65,11 +75,8 @@ const Modal = ({ activeItem, toggle, onSave }) => {
             </div>
           </div>
 
-          {/* modal actions/options */}
+          {/* modal save option */}
           <div className='flex justify-end space-x-3 mt-6'>
-            <button onClick={toggle} className='bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium transition-colors cursor-pointer'>
-              Cancel
-            </button>
             <button onClick={() => onSave(item)} className='bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md font-medium transition-colors cursor-pointer'>
               Save
             </button>

@@ -9,7 +9,7 @@ const Home = () => {
     const [filterStatus, setFilterStatus] = useState('all');
     const [taskList, setTaskList] = useState([]);
     const [modal, setModal] = useState(false);
-    const [activeItem, setActiveItem] = useState({ 'title': '', 'description': '', 'status': 'pending' });
+    const [activeItem, setActiveItem] = useState({ 'title': '', 'description': '', 'status': 'pending', 'due_date': ''});
 
     useEffect(() => {
         refreshList();
@@ -38,21 +38,26 @@ const Home = () => {
 
     // handle submit/save action
     const handleSubmit = (item) => {
+        // convert empty due date to null so putting a due date becomes optional
+        const cleanedItem = {
+            ...item,
+            due_date: item.due_date == '' ? null : item.due_date
+        }
         // to close the modal the moment i click save
         toggle();
-        if (item.id) {
+        if (cleanedItem.id) {
             // to update existing task
             axios
-                .put(`http://127.0.0.1:8000/todo/tasks/${item.id}/`, item)
+                .put(`http://127.0.0.1:8000/todo/tasks/${item.id}/`, cleanedItem)
                 .then(response => refreshList())
-                .catch(error => console.log(error));
+                .catch(error => console.log(error.response?.data));
             return
         }
         // to create a new task
         axios
-            .post('http://127.0.0.1:8000/todo/tasks/', item)
+            .post('http://127.0.0.1:8000/todo/tasks/', cleanedItem)
             .then(response => refreshList())
-            .catch(error => console.log(error));
+            .catch(error => console.log(error.response?.data));
     };
 
     // handle delete action
@@ -65,7 +70,7 @@ const Home = () => {
 
     // open model to create a new item
     const createItem = () => {
-        const newItem = { 'title': '', 'description': '', 'status': 'pending' };
+        const newItem = { 'title': '', 'description': '', 'status': 'pending', 'due_date': ''};
         setActiveItem(newItem);
         setModal(true);
     };
@@ -88,7 +93,7 @@ const Home = () => {
                 {status}
             </span>
         )
-    }
+    };
 
     const renderTabList = () => {
         return (
@@ -125,6 +130,29 @@ const Home = () => {
         )
     }
 
+    const renderHeader = () => {
+        if (filteredStatus.length == 0) return null;
+        
+        return (
+            <div className=''>
+                <div className='flex items-center space-x-4 flex-1 pt-10'>
+                   <span className='font-semibold text-black text-base uppercase w-40 px-7 tracking-wider'>
+                        Task Name
+                    </span>
+                    <span className='font-semibold text-black text-base uppercase w-[500px] px-7 tracking-wider'>
+                        Description
+                    </span>
+                    <span className='font-semibold text-black text-base uppercase w-32 px-3 tracking-wider'>
+                        Due
+                    </span>
+                    <div className='font-semibold text-black text-base uppercase shrink-0 pl-4 tracking-wider'>
+                        Status
+                    </div> 
+                </div>
+            </div>
+        )
+    }
+
     const renderItems = () => {
         if (filteredStatus.length == 0) {
             return (
@@ -135,11 +163,14 @@ const Home = () => {
         return filteredStatus.map(item => (
             <li key={item.id} className='flex items-center justify-between py-4'>
                 <div className='flex items-center space-x-4 divide-x divide-gray-300 flex-1'>
-                    <span className='font-semibold text-gray-800 truncate max-w-xs px-7' title={item.title}>
+                    <span className='font-semibold text-gray-800 truncate w-40 px-7' title={item.title}>
                         {item.title}
                     </span>
-                    <span className='font-semibold text-gray-800 truncate max-w-xl px-7' title={item.description}>
+                    <span className='font-semibold text-gray-800 truncate w-[500px] px-7' title={item.description}>
                         {item.description}
+                    </span>
+                    <span className='font-semibold text-gray-800 truncate w-32 px-3' title={item.due_date}>
+                        {item.due_date}
                     </span>
                     <div className='shrink-0 pl-4'>
                         {renderStatusBadges(item.status)}
@@ -167,6 +198,7 @@ const Home = () => {
                             Add task
                         </button>
                         {renderTabList()}
+                        {renderHeader()}
                         <ul className='divide-y divide-gray-300'>
                             {renderItems()}
                         </ul>
