@@ -15,6 +15,7 @@ class TodoView(ModelViewSet):
     def get_queryset(self):
         today = timezone.localdate()
 
+        # to only retrieve the tasks of the user that is logged in
         user_todos = Todo.objects.filter(user=self.request.user)
 
         # turn over due pending tasks to incompleted
