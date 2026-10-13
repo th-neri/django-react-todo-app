@@ -140,6 +140,10 @@ SIMPLE_JWT = {
    'ACCESS_TOKEN_LIFETIME': timedelta(days=1) # changed the valid lifetime of the access token to one day instead of 5 minutes by default
 }
 
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+}
+
 # to set off User model to our custom model User(AbstractUser)
 AUTH_USER_MODEL = 'core.User'
 

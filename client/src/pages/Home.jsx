@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import Modal from './Modal';
+import api from '../api';
+import Modal from '../components/Modal';
 
 
 const Home = () => {
@@ -17,8 +17,8 @@ const Home = () => {
 
     // fetch tasks from the django api endpoint
     const refreshList = () => {
-        axios
-            .get('http://127.0.0.1:8000/todo/tasks/')
+        api
+            .get('todo/tasks/')
             .then(response => {
                 const data = Array.isArray(response.data)
                     ? response.data
@@ -47,23 +47,23 @@ const Home = () => {
         toggle();
         if (cleanedItem.id) {
             // to update existing task
-            axios
-                .put(`http://127.0.0.1:8000/todo/tasks/${item.id}/`, cleanedItem)
+            api
+                .put(`todo/tasks/${item.id}/`, cleanedItem)
                 .then(response => refreshList())
                 .catch(error => console.log(error.response?.data));
             return
         }
         // to create a new task
-        axios
-            .post('http://127.0.0.1:8000/todo/tasks/', cleanedItem)
+        api
+            .post('todo/tasks/', cleanedItem)
             .then(response => refreshList())
             .catch(error => console.log(error.response?.data));
     };
 
     // handle delete action
     const handleDelete = (item) => {
-        axios
-            .delete(`http://127.0.0.1:8000/todo/tasks/${item.id}/`)
+        api
+            .delete(`todo/tasks/${item.id}/`)
             .then(response => refreshList())
             .catch(error => console.log(error));
     };
@@ -190,6 +190,13 @@ const Home = () => {
 
     return (
         <div className='w-full min-h-screen bg-sky-600 flex flex-col items-center py-6'>
+            <div className='w-full flex justify-end pr-10'>
+                <button 
+                onClick={() => navigate('/login')}
+                className='flex py-2 px-10 text-white font-bold bg-amber-500 hover:bg-amber-600 cursor-pointer rounded-md duration-400'>
+                    EXIT
+                </button>
+            </div>
             <div className='text-white text-center uppercase font-bold text-4xl my-4'>Task Manager</div>
             <div className='w-full max-w-7xl flex justify-center'>
                 <div className='w-full bg-white border border-gray-200 rounded-lg p-4 shadow-sm'>
