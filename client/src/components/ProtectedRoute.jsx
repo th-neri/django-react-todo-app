@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children }) => {
     }
 
     try {
-      const response = await api.post('auth/jwt/refresh/', {
+      const response = await api.post("auth/jwt/refresh/", {
         refresh: refresh,
       });
       if (response.status === 200) {
@@ -66,7 +66,9 @@ const ProtectedRoute = ({ children }) => {
   };
 
   if (isAuthorized === null) {
-    return <div className="text-white text-center mt-20 font-bold">Loading...</div>;
+    return (
+      <div className="text-white text-center mt-20 font-bold">Loading...</div>
+    );
   }
 
   return isAuthorized ? children : <Navigate to="/login" />;

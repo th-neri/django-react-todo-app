@@ -65,7 +65,7 @@ const Form = ({ route, method }) => {
           </div>
         )}
 
-        {/* email password */}
+        {/* email field */}
         <div className="flex flex-col">
           <label className="text-lg font-bold text-gray-700">
             Email <RedAsterisk />
